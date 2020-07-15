@@ -1,5 +1,5 @@
 const express = require('express');
-
+const Users = require('./userDb.js');
 const router = express.Router();
 
 router.post('/', (req, res) => {
@@ -12,6 +12,7 @@ router.post('/:id/posts', (req, res) => {
 
 router.get('/', (req, res) => {
   // do your magic!
+
 });
 
 router.get('/:id', (req, res) => {
@@ -34,6 +35,21 @@ router.put('/:id', (req, res) => {
 
 function validateUserId(req, res, next) {
   // do your magic!
+  const {id} = req.params;
+  Users
+    .getById(id)
+    .then(user => {
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        next({ code: 404, message: 'Invalid User Id'})
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      next({code: 500, message: " Failed to Process", err})
+    })
 }
 
 function validateUser(req, res, next) {
